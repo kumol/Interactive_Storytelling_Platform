@@ -1,0 +1,10 @@
+const route = require("express").Router();
+const userController = require("../../controller/user");
+const {checkAuth, checkAdminOrAuthor, checkAdmin} = require("../../services/auth");
+route.get("/", checkAuth, checkAdmin, userController.getUserList);
+route.post("/", userController.addUser);
+route.get("/:id", userController.getUser);
+route.patch("/:id", checkAuth, checkAdminOrAuthor, userController.updateUser);
+route.delete("/:id", checkAuth, checkAdminOrAuthor, userController.deleteUser);
+route.post("/login", userController.login);
+module.exports = route;
