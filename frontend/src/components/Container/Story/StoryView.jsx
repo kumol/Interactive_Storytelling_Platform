@@ -24,27 +24,27 @@ const StoryView = () => {
 
   return (
     <Layout>
-    <Container fluid className="d-flex justify-content-center" style={{ height: '100vh', backgroundColor: '#eee' }}>
-      <Row>
-        <Col>
-          <Card style={{ width: '800px', borderTop: "0px", borderRadius: "0px", height: "100vh", padding: '20px', backgroundColor: '#fff', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
-            <Card.Body>
-              <Card.Title className="text-center">{story.title}</Card.Title>
-              <Card.Text>{story.body}</Card.Text>
-              <h5>Paths:</h5>
-              <ul>
-                {story.paths.map((path, index) => (
-                  <li key={index}><strong>Option {path.option}:</strong> {path.body}</li>
-                ))}
-              </ul>
-              <p><strong>Engaged Time:</strong> {story.engagedTime} seconds</p>
-              <p><strong>Author:</strong> {story.authorName}</p>
-              <p><strong>Created At:</strong> {story.createdAt}</p>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+      <Container fluid className="d-flex justify-content-center" style={{ height: '100vh', backgroundColor: '#eee' }}>
+        <Row>
+          <Col>
+            <Card style={{ width: '800px', borderTop: "0px", borderRadius: "0px", height: "100vh", padding: '20px', backgroundColor: '#fff', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+              <Card.Body>
+                <Card.Title className="text-center">{story.title}</Card.Title>
+                <Card.Text>{story.body}</Card.Text>
+                <h5>Paths:</h5>
+                <ul>
+                  {story.paths.map((path, index) => (
+                    <li key={index}><strong>Option {path.option}:</strong> {path.body}</li>
+                  ))}
+                </ul>
+                <p><strong>Engaged Time:</strong> {story.engagedTime} seconds</p>
+                <p><strong>Author:</strong> {story.authorName}</p>
+                <p><strong>Created At:</strong> {story.createdAt}</p>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     </Layout>
   );
 };

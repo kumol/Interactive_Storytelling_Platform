@@ -93,7 +93,7 @@ module.exports = {
             }
             let user = await User.findOne({ email: email }).select("-_v -_id").lean();
             if (!user) {
-                return forbidden(res, "Wrong email ");
+                return forbidden(res, "Wrong email");
             }
             if (!authService.passwordCompare(password, user.password)) {
                 return forbidden(res, "Wrong password")

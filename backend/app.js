@@ -1,4 +1,5 @@
 const express = require("express");
+var morgan = require('morgan')
 require('dotenv').config();
 require("./config/db");
 const route = require("./server/api/index");
@@ -7,6 +8,7 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
+app.use(morgan());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
