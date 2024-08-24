@@ -24,7 +24,7 @@ const StoryView = () => {
 
   return (
     <Layout>
-      <Container fluid className="d-flex justify-content-center" style={{ height: '100vh', backgroundColor: '#eee' }}>
+      <Container fluid className="d-flex justify-content-center pt-3" style={{ height: '100vh', backgroundColor: '#eee' }}>
         <Row>
           <Col>
             <Card style={{ width: '800px', borderTop: "0px", borderRadius: "0px", height: "100vh", padding: '20px', backgroundColor: '#fff', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>

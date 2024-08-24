@@ -113,7 +113,7 @@ function Stories() {
   ];
     return (
       <Layout>
-        <Container fluid className="d-flex align-items-center justify-content-center" style={{ minHeight: '100vh', backgroundColor: '#eee' }}>
+        <Container fluid className="d-flex align-items-center justify-content-center pt-3" style={{ minHeight: '100vh', backgroundColor: '#eee' }}>
       <Row className="pt-20">
         <Col>
           {stories.map((story, index) => (

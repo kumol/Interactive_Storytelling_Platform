@@ -1,7 +1,9 @@
 import axios from 'axios';
+import {useNavigate} from 'react-router-dom'
 import { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 const baseUrl = "http://localhost:8080/api/";
+
 // import axios from "../../../config/axios";
 // import axios from 'axios';
 function User() {
@@ -9,7 +11,7 @@ function User() {
     const [name, setName] = useState("admin");
     const [email, setEmail] = useState("admin@email.com");
     const [password, setPassword] = useState("admin");
-
+    const navaigate = useNavigate();
     const signUpOrSignIn = ()=>{
       if(signIn){
         setName(()=> "")
@@ -40,18 +42,23 @@ function User() {
 
     const onSubmit = async(event) => {
       event.preventDefault();
-      if(event.target.name === "login") {
-        if(!email || !password){
-        } else{
-          const response = await axios.post(`${baseUrl}user/login`,{password, email});
-          if(response.data.statusCode == "200") {
-
+      try{
+        if(event.target.name === "login") {
+          if(!email || !password){
           } else{
-            console.log(response.data.message)
+            const response = await axios.post(`${baseUrl}user/login`,{password, email});
+            if(response.data.statusCode == "200") {
+              localStorage.setItem('logintoken', response.data.body.token);
+              navaigate("/stories");
+            } else{
+              console.log(response.data.message)
+            }
           }
+        } else {
+  
         }
-      } else {
-
+      }catch(err){
+        console.log(err);
       }
     }
     
