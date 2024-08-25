@@ -2,9 +2,7 @@ import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
 import { useEffect, useState } from "react";
 import Layout from "../../Layout/Layout";
-import { Container, Row, Col, Card } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Container, Row, Col, Card, ButtonToolbar, ButtonGroup, Button, Modal} from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const baseUrl = "http://localhost:8080/api/";
@@ -14,6 +12,7 @@ function Stories() {
   const [token, setToken] = useState("");
   const [userInformation, setUserInformation] = useState({});
   const [show, setShow] = useState(false);
+  const [pagination, setPagination] = useState({page: 1, limit: 5, total: 0, totalPage: 1})
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const notify = (content, type) => {
@@ -48,12 +47,19 @@ function Stories() {
       }
     }
   }
-  const fetchStories = async () => {
+  const fetchStories = async (paging) => {
     try{
-      const response = await axios.get(`${baseUrl}story`);
+      const response = await axios.get(`${baseUrl}story?page=${paging.page}&limit=${paging.limit}`);
       if(response.data.statusCode == "200") {
-        let storiesList = stories.concat(response.data.body);
-        setStories(storiesList);
+        setStories(response.data.body);
+        let page = {page: 1, limit: 1, total: 5, totalPage: 1};
+        page.page = response.data.page;
+        page.limit = response.data.limit;
+        page.totalPage = Math.ceil(response.data.total/response.data.limit);
+        page.total = response.data.total;
+        console.log(page.totalPage);
+        setPagination(page);
+        // setStories(storiesList);
       }
       else{
         notify(response.data.message, "warning");
@@ -67,6 +73,13 @@ function Stories() {
     }
   }
   
+  const onPagination = (e, pageNumber) => {
+    e.preventDefault();
+    let page = {...pagination};
+    page.page = pageNumber;
+    setPagination(page);
+    fetchStories(page);
+  }
   useEffect(()=>{
     const userToken = localStorage.getItem('logintoken');
     setToken(()=>userToken);
@@ -75,12 +88,12 @@ function Stories() {
         setUserInformation(decodedToken);
         console.log(decodedToken);
     }
-    fetchStories()
+    fetchStories(pagination)
   },[])
     return (
       <Layout>
         <ToastContainer />
-        { stories && stories.length>0 ? <Container fluid className="d-flex align-items-center justify-content-center pt-3" style={{ minHeight: '100vh', backgroundColor: '#eee' }}>
+        { stories && stories.length>0 ? <Container fluid className="d-flex justify-content-center pt-3" style={{ minHeight: '100vh', backgroundColor: '#eee' }}>
           <Row className="pt-20">
             <Col>
               {stories.map((story, index) => (
@@ -118,8 +131,16 @@ function Stories() {
                   </Card.Body>
                 </Card>
               ))}
+              <ButtonToolbar aria-label="Toolbar with button groups">
+                <ButtonGroup className="me-2" aria-label="First group">
+                  {[...Array(pagination.totalPage)].map((v, index)=>{
+                    return <Button key={index} onClick={(e)=>onPagination(e, index+1)} >{index+1}</Button>
+                  })}
+                </ButtonGroup>
+              </ButtonToolbar>
             </Col>
           </Row>
+          
         </Container> : <div style={{
       backgroundColor: '#eee',
       width: '100vw',
