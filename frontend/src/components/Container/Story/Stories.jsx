@@ -5,6 +5,8 @@ import Layout from "../../Layout/Layout";
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const baseUrl = "http://localhost:8080/api/";
 
 function Stories() {
@@ -14,23 +16,54 @@ function Stories() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const notify = (content, type) => {
+    switch(type){
+      case "success":
+        toast.success(content);
+        break;
+      case "error":
+        toast.error(content);
+        break;
+      case "info":
+        toast.error(content);
+        break;
+      case "warning":
+        toast.warning(content);
+        break;
+      default:
+        toast(content);
+        break;
+    }
+  };
   const handleDelete = async(id) => {
     try{
       const response = await axios.delete(`${baseUrl}story/${id}`, {headers:{ Authorization: `Bearer ${token}`}});
       setShow(false)
+      notify("Deletion successful", "success")
     } catch (err){
-      console.log(err);
+      if(err.name == "AxiosError"){
+        notify(err.response.data.message, "error");
+      } else {
+        notify(err.message, "error");
+      }
     }
   }
   const fetchStories = async () => {
     try{
       const response = await axios.get(`${baseUrl}story`);
       if(response.data.statusCode == "200") {
-        console.log(response.data);
-        setStories(response.data.body);
+        let storiesList = stories.concat(response.data.body);
+        setStories(storiesList);
+      }
+      else{
+        notify(response.data.message, "warning");
       }
     } catch(err){
-      console.log(err);
+      if(err.name == "AxiosError"){
+        notify(err.response.data.message, "error");
+      } else {
+        notify(err.message, "error");
+      }
     }
   }
   
@@ -46,6 +79,7 @@ function Stories() {
   },[])
     return (
       <Layout>
+        <ToastContainer />
         { stories && stories.length>0 ? <Container fluid className="d-flex align-items-center justify-content-center pt-3" style={{ minHeight: '100vh', backgroundColor: '#eee' }}>
           <Row className="pt-20">
             <Col>

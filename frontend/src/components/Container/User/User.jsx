@@ -2,6 +2,8 @@ import axios from 'axios';
 import {useNavigate} from 'react-router-dom'
 import { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const baseUrl = "http://localhost:8080/api/";
 
 // import axios from "../../../config/axios";
@@ -40,25 +42,61 @@ function User() {
       }
     }
 
+    const notify = (content, type) => {
+      switch(type){
+        case "success":
+          toast.success(content);
+          break;
+        case "error":
+          toast.error(content);
+          break;
+        case "info":
+          toast.error(content);
+          break;
+        case "warning":
+          toast.warning(content);
+          break;
+        default:
+          toast(content);
+          break;
+      }
+    };
+
     const onSubmit = async(event) => {
       event.preventDefault();
       try{
         if(event.target.name === "login") {
           if(!email || !password){
+            notify("Email and password are required field", "warning");
           } else{
             const response = await axios.post(`${baseUrl}user/login`,{password, email});
             if(response.data.statusCode == "200") {
+              notify("Login", "success");
               localStorage.setItem('logintoken', response.data.body.token);
               navaigate("/stories");
             } else{
-              console.log(response.data.message)
+              notify(response.data.message, "warning");
             }
           }
         } else {
-  
+          if(!email || !name || !password) {
+            notify("Email name and password are required field", "warning");
+          } else{
+            const response = await axios.post(`${baseUrl}user`,{password, email, name});
+            if(response.data.statusCode == "200" || response.data.statusCode == "201") {
+              notify("Signup Success, Go for login", "success");
+              setSignIn((signIn)=> !signIn)
+            } else{
+              notify(response.data.message, "warning");
+            }
+          }
         }
       }catch(err){
-        console.log(err);
+        if(err.name == "AxiosError"){
+          notify(err.response.data.message, "error");
+        } else {
+          notify(err.message, "error");
+        }
       }
     }
     
@@ -120,6 +158,7 @@ function User() {
     </div>;
     return (
       <Container fluid className="d-flex align-items-center justify-content-center" style={{ height: '100vh', backgroundColor: '#eee' }}>
+      <ToastContainer />
       <Row>
         <Col>
           {userForm}

@@ -6,6 +6,8 @@ import Layout from "../../Layout/Layout";
 import React from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const baseUrl = "http://localhost:8080/api/";
 
 const StoryView = () => {
@@ -15,14 +17,39 @@ const StoryView = () => {
   const [viewPath, setViewPath] = useState({});
   const [story, setStory] = useState({});
   const {id} = useParams();
+  const notify = (content, type) => {
+    switch(type){
+      case "success":
+        toast.success(content);
+        break;
+      case "error":
+        toast.error(content);
+        break;
+      case "info":
+        toast.error(content);
+        break;
+      case "warning":
+        toast.warning(content);
+        break;
+      default:
+        toast(content);
+        break;
+    }
+  };
   const fetchStory = async (id) => {
     try{
       const response = await axios.get(`${baseUrl}story/${id}`);
       if(response.data.statusCode == "200") {
         setStory(response.data.body);
+      } else{
+        notify(response.data.message, "warning");
       }
     } catch(err){
-      console.log(err);
+      if(err.name == "AxiosError"){
+        notify(err.response.data.message, "error");
+      } else {
+        notify(err.message, "error");
+      }
     }
   }
 
@@ -30,7 +57,6 @@ const StoryView = () => {
     setSelectedOption(id);
     let pathIndex = story.paths.findIndex(p=> p.option === id);
     setViewPath(story.paths[pathIndex]);
-    console.log(story.paths[pathIndex]);
   }
 
   useEffect(()=>{
@@ -47,11 +73,13 @@ const StoryView = () => {
 
   return (
     <Layout>
+      <ToastContainer />
       {
         story && story.paths ? <Container fluid className="d-flex justify-content-center pt-3" style={{ height: '100vh', backgroundColor: '#eee' }}>
+          <ToastContainer />
         <Row>
           <Col>
-            <Card style={{ width: '800px', borderTop: "0px", borderRadius: "0px", height: "100vh", padding: '20px', backgroundColor: '#fff', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+            <Card style={{ width: '800px', borderTop: "0px",  backgroundColor: '#fff', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
               <Card.Body>
                 <Card.Title className="text-center">{story.title}</Card.Title>
                 <Card.Text>{story.body}</Card.Text>

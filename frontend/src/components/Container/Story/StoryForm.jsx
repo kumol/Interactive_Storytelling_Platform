@@ -5,12 +5,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Layout from '../../Layout/Layout';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const baseUrl = "http://localhost:8080/api/";
 
 const StoryForm = () => {
   const {id} = useParams();
   const navaigate = useNavigate();
-  console.log(id)
   const initialStory = {
     title: "",
     body: "",
@@ -26,7 +27,6 @@ const StoryForm = () => {
       [name]: value
     });
   };
-
   const handlePathChange = (index, e) => {
     const { name, value } = e.target;
     const newPaths = story.paths.map((path, i) => (
@@ -47,33 +47,69 @@ const StoryForm = () => {
     setStory({ ...story, paths: newPaths });
   };
 
+  const notify = (content, type) => {
+    switch(type){
+      case "success":
+        toast.success(content);
+        break;
+      case "error":
+        toast.error(content);
+        break;
+      case "info":
+        toast.error(content);
+        break;
+      case "warning":
+        toast.warning(content);
+        break;
+      default:
+        toast(content);
+        break;
+    }
+  };
   const handleSubmit = async(e) => {
     e.preventDefault();
     try{
-      console.log(story)
+      let message = "";
       let response;
       if(id) {
+        message = "Update";
+        notify(`Requesting ${message}`)
         response = await axios.patch(`${baseUrl}story/${id}`, story, {headers:{ Authorization: `Bearer ${token}`}});
       } else {
+        message = "Created";
+        notify(`Requesting ${message}`)
         response = await axios.post(`${baseUrl}story`, story, {headers:{ Authorization: `Bearer ${token}`}});
       }
       if(response.data.statusCode == "201" || response.data.statusCode == "200"){
+        notify(`${message} successful`, "success")
         navaigate("/stories");
+      } 
+      if(response.data.statusCode == "304"){
+        notify(`Nothing to ${message}`, "warning");
       }
     } catch(err){
-      console.log(err);
+      if(err.name == "AxiosError"){
+        notify(err.response.data.message, "error");
+      } else {
+        notify(err.message, "error");
+      }
     }
   };
 
   const fetchStory = async (id) => {
     try{
-      console.log("fetchStory")
       const response = await axios.get(`${baseUrl}story/${id}`);
       if(response.data.statusCode == "200") {
         setStory(response.data.body);
+      } else {
+        notify(response.data.message, "warning");
       }
     } catch(err){
-      console.log(err);
+      if(err.name == "AxiosError"){
+        notify(err.response.data.message, "error");
+      } else {
+        notify(err.message, "error");
+      }
     }
   }
 
@@ -82,11 +118,11 @@ const StoryForm = () => {
     setToken(()=>userToken);
     if(id) fetchStory(id)
   },[]);
-
   return (
     <Layout>
       <Container fluid className="d-flex align-items-center justify-content-center pt-3" style={{ minHeight: '100vh', backgroundColor: '#eee' }}>
-        <Row>
+      <ToastContainer />
+      <Row style={{height: "100vh"}}>
           <Col>
             <Form style={{ width: '800px', padding: '20px', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }} onSubmit={handleSubmit}>
               <Form.Group controlId="formTitle">
