@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../../Layout/Layout";
 import { Container, Row, Col, Card, ButtonToolbar, ButtonGroup, Button, Modal} from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
@@ -8,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const baseUrl = "http://localhost:8080/api/";
 
 function Stories() {
+  const navaigate = useNavigate()
   const [stories, setStories] = useState([]);
   const [token, setToken] = useState("");
   const [userInformation, setUserInformation] = useState({});
@@ -84,7 +86,11 @@ function Stories() {
     setToken(()=>userToken);
     if (userToken) {
         const decodedToken = jwtDecode(userToken);
-        setUserInformation(decodedToken);
+        if(decodedToken.exp>Date.now()){
+          setToken("");
+          localStorage.removeItem("logintoken")
+          navaigate("/user")
+        } else setUserInformation(decodedToken);
     }
     fetchStories(pagination)
   },[])

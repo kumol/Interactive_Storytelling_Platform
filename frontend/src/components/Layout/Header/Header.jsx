@@ -3,17 +3,21 @@ import { useEffect, useState } from "react";
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
+import { useNavigate } from "react-router-dom";
 
 function Header() {
   const [token, setToken] = useState("");
   const [userInformation, setUserInformation] = useState({});
-  
+  const navaigate = useNavigate()
   useEffect(()=>{
     const userToken = localStorage.getItem('logintoken');
     setToken(()=>userToken);
     if (userToken) {
         const decodedToken = jwtDecode(userToken);
-        setUserInformation(decodedToken);
+        if(decodedToken.exp>Date.now()){
+          setToken("");
+          localStorage.removeItem("logintoken")
+        } else setUserInformation(decodedToken);
     }
   },[])
   return (

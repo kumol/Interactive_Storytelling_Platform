@@ -78,7 +78,6 @@ const StoryView = () => {
     if (userToken) {
         const decodedToken = jwtDecode(userToken);
         setUserInformation(decodedToken);
-        console.log(decodedToken);
     }
     fetchStory(id);
     let endingTime = Date.now();

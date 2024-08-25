@@ -116,6 +116,16 @@ const StoryForm = () => {
   useEffect(()=>{
     const userToken = localStorage.getItem('logintoken');
     setToken(()=>userToken);
+    if (userToken) {
+      const decodedToken = jwtDecode(userToken);
+      if(decodedToken.exp>Date.now()){
+        setToken("");
+        localStorage.removeItem("logintoken")
+        navaigate("/user")
+      }
+    } else {
+      navaigate("/user")
+    }
     if(id) fetchStory(id)
   },[]);
   return (
