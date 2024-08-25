@@ -13,24 +13,7 @@ const StoryView = () => {
   const [userInformation, setUserInformation] = useState({});
   const [selectedOption, setSelectedOption] = useState("");
   const [viewPath, setViewPath] = useState({});
-  const [story, setStory] = useState({
-    title: "The Enchanted Forest",
-    body: "You find yourself at the edge of a mysterious forest.",
-    paths: [
-      {
-        option: "A",
-        body: "You decide to enter the forest, where the trees seem to whisper as you pass."
-      },
-      {
-        option: "B",
-        body: "You follow a strange sound that leads you deeper into the unknown."
-      }
-    ],
-    engagedTime: 0,
-    authorId: "66c7cd0cd96f47ba71bef8bf",
-    authorName: "Kumol Bhoumik",
-    createdAt: "2024-08-23 06:02:56"
-  });
+  const [story, setStory] = useState({});
   const {id} = useParams();
   const fetchStory = async (id) => {
     try{
@@ -64,7 +47,8 @@ const StoryView = () => {
 
   return (
     <Layout>
-      <Container fluid className="d-flex justify-content-center pt-3" style={{ height: '100vh', backgroundColor: '#eee' }}>
+      {
+        story && story.paths ? <Container fluid className="d-flex justify-content-center pt-3" style={{ height: '100vh', backgroundColor: '#eee' }}>
         <Row>
           <Col>
             <Card style={{ width: '800px', borderTop: "0px", borderRadius: "0px", height: "100vh", padding: '20px', backgroundColor: '#fff', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
@@ -83,7 +67,17 @@ const StoryView = () => {
             </Card>
           </Col>
         </Row>
-      </Container>
+      </Container> 
+      :<div style={{
+        backgroundColor: '#eee',
+        width: '100vw',
+        height: '100vh',
+        textAlign: "center",
+        padding: '20px',
+        borderRadius: '10px',
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)'
+      }}>Loading....</div>
+      }
     </Layout>
   );
 };

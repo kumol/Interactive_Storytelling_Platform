@@ -8,26 +8,7 @@ import Modal from 'react-bootstrap/Modal';
 const baseUrl = "http://localhost:8080/api/";
 
 function Stories() {
-  const [stories, setStories] = useState([
-    {
-      id: "story-005",
-      title: "The Dragon's Lair",
-      body: "You have found the entrance to the legendary dragon's lair.",
-      paths: [
-        {
-          option: "enter_lair",
-          body: "You bravely enter the lair, ready to face the dragon."
-        },
-        {
-          option: "wait_outside",
-          body: "You decide to wait outside, gathering your courage before entering."
-        }
-      ],
-      engagedTime: 275,
-      authorName: "Robert Brown",
-      createdAt: "2024-08-22 17:20:00"
-    }
-  ]);
+  const [stories, setStories] = useState([]);
   const [token, setToken] = useState("");
   const [userInformation, setUserInformation] = useState({});
   const [show, setShow] = useState(false);
@@ -65,7 +46,7 @@ function Stories() {
   },[])
     return (
       <Layout>
-        <Container fluid className="d-flex align-items-center justify-content-center pt-3" style={{ minHeight: '100vh', backgroundColor: '#eee' }}>
+        { stories && stories.length>0 ? <Container fluid className="d-flex align-items-center justify-content-center pt-3" style={{ minHeight: '100vh', backgroundColor: '#eee' }}>
           <Row className="pt-20">
             <Col>
               {stories.map((story, index) => (
@@ -77,7 +58,7 @@ function Stories() {
                     {
                       (userInformation && userInformation.data && (userInformation.data.roleId === "1" || userInformation.data.id === story.authorId)) ? 
                       <>
-                        <Button variant="warning">edit</Button>{' '}
+                        <Button variant="warning" href={`stories/storyform/${story.id}`}>edit</Button>{' '}
                         <Button variant="warning" onClick={handleShow}>delete</Button>{' '}
                         <Modal
                           show={show}
@@ -105,7 +86,15 @@ function Stories() {
               ))}
             </Col>
           </Row>
-        </Container>
+        </Container> : <div style={{
+      backgroundColor: '#eee',
+      width: '100vw',
+      height: '100vh',
+      textAlign: "center",
+      padding: '20px',
+      borderRadius: '10px',
+      boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)'
+    }}>Loading....</div>}
       </Layout>
     );
   }

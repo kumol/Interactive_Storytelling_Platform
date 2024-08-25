@@ -13,6 +13,7 @@ function App() {
           <Route path='/' element={<Navigate to = "stories"/>}/>
           <Route path='/stories' element={<Stories/>}/> 
           <Route path='/stories/storyform' element={<StoryForm/>}/>
+          <Route path='/stories/storyform/:id' element={<StoryForm/>}/>
           <Route path='/stories/:id' element={<StoryView/>}/>
           <Route path='/user' element={<User/>}/>
         </Routes>

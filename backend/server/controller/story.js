@@ -47,14 +47,14 @@ module.exports = {
     updateStory: async (req, res) => {
         try{
             const {id} = req.params;
-            const { title, body, paths } = req.body;
+            const { title, body, paths, engagedTime } = req.body;
             let updatedObj = {};
             if(title) updatedObj.title = title;
             if(body) updatedObj.body = body;
             if(paths) updatedObj.paths = paths;
             if(engagedTime) updatedObj.engagedTime = engagedTime;
 
-            let updated = await Story.updateOne({ id: id }, { $set: updateObj });
+            let updated = await Story.updateOne({ id: id }, { $set: updatedObj });
             let story = await Story.findOne({ id: id }).select("-__v _id").lean();
             return updated.modifiedCount ? success(res, "", story) : notModified(res, "Not Modified", story);
         } catch (err){

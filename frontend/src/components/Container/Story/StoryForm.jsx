@@ -1,34 +1,24 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import {jwtDecode} from "jwt-decode";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from "react-router-dom";
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Layout from '../../Layout/Layout';
+const baseUrl = "http://localhost:8080/api/";
 
 const StoryForm = () => {
+  const {id} = useParams();
+  const navaigate = useNavigate();
+  console.log(id)
   const initialStory = {
-    title: "The Haunted Mansion",
-    body: "You stand before an old mansion rumored to be haunted.",
-    paths: [
-      {
-        option: "A",
-        body: "You push open the creaky door and step into the dark, dusty hallway."
-      },
-      {
-        option: "B",
-        body: "Fear grips you, and you decide to run away, leaving the mansion behind."
-      },
-      {
-        option: "C",
-        body: "Fear grips you, and you decide to run away, leaving the mansion behind."
-      },
-      {
-        option: "D",
-        body: "Fear grips you, and you decide to run away, leaving the mansion behind."
-      }
-    ]
+    title: "",
+    body: "",
+    paths: [ ],
+    engagedTime: 0
   };
-
+  const [token, setToken] = useState("");
   const [story, setStory] = useState(initialStory);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setStory({
@@ -57,10 +47,41 @@ const StoryForm = () => {
     setStory({ ...story, paths: newPaths });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log("Submitted Story:", story);
+    try{
+      console.log(story)
+      let response;
+      if(id) {
+        response = await axios.patch(`${baseUrl}story/${id}`, story, {headers:{ Authorization: `Bearer ${token}`}});
+      } else {
+        response = await axios.post(`${baseUrl}story`, story, {headers:{ Authorization: `Bearer ${token}`}});
+      }
+      if(response.data.statusCode == "201" || response.data.statusCode == "200"){
+        navaigate("/stories");
+      }
+    } catch(err){
+      console.log(err);
+    }
   };
+
+  const fetchStory = async (id) => {
+    try{
+      console.log("fetchStory")
+      const response = await axios.get(`${baseUrl}story/${id}`);
+      if(response.data.statusCode == "200") {
+        setStory(response.data.body);
+      }
+    } catch(err){
+      console.log(err);
+    }
+  }
+
+  useEffect(()=>{
+    const userToken = localStorage.getItem('logintoken');
+    setToken(()=>userToken);
+    if(id) fetchStory(id)
+  },[]);
 
   return (
     <Layout>
@@ -97,7 +118,7 @@ const StoryForm = () => {
 
               <Button variant="secondary" onClick={addPath} className="mt-3">Add Path</Button>
 
-              <Button variant="primary" type="submit" className="mt-4 w-100">Submit</Button>
+              <Button variant="primary" type="submit" onClick={handleSubmit} className="mt-4 w-100">Submit</Button>
             </Form>
           </Col>
         </Row>
