@@ -53,9 +53,22 @@ module.exports = {
             if(body) updatedObj.body = body;
             if(paths) updatedObj.paths = paths;
             if(engagedTime) updatedObj.engagedTime = engagedTime;
-
             let updated = await Story.updateOne({ id: id }, { $set: updatedObj });
             let story = await Story.findOne({ id: id }).select("-__v _id").lean();
+            return updated.modifiedCount ? success(res, "", story) : notModified(res, "Not Modified", story);
+        } catch (err){
+            return throughError(res, err);
+        }
+    },
+    storyReadingTime: async (req, res) => {
+        try{
+            const {id} = req.params;
+            const { engagedTime } = req.body;
+            let updatedObj = {};
+            let storyTobeUpdated = await Story.findOne({ id: id }).select("-__v _id").lean();
+            if(engagedTime) updatedObj.engagedTime = storyTobeUpdated.engagedTime + engagedTime;
+            let updated = await Story.updateOne({ id: id }, { $set: updatedObj });
+            let story = {...storyTobeUpdated, engagedTime: updatedObj.engagedTime};
             return updated.modifiedCount ? success(res, "", story) : notModified(res, "Not Modified", story);
         } catch (err){
             return throughError(res, err);

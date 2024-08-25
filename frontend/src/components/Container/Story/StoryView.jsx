@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useFetcher, useParams } from "react-router-dom";
 import Layout from "../../Layout/Layout";
 import React from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
@@ -16,6 +16,7 @@ const StoryView = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [viewPath, setViewPath] = useState({});
   const [story, setStory] = useState({});
+  const [startingTime, setStartingTime] = useState(Date.now());
   const {id} = useParams();
   const notify = (content, type) => {
     switch(type){
@@ -59,8 +60,19 @@ const StoryView = () => {
     setViewPath(story.paths[pathIndex]);
   }
 
+  const updateEngagedTime = async (time)=>{
+    try{
+      const response = await axios.put(`${baseUrl}story/${id}`, {engagedTime: time}, {headers:{ Authorization: `Bearer ${token}`}});
+    } catch(err){
+      if(err.name == "AxiosError"){
+        notify(err.response.data.message, "error");
+      } else {
+        notify(err.message, "error");
+      }
+    }
+  }
   useEffect(()=>{
-    
+    setStartingTime(Date.now());
     const userToken = localStorage.getItem('logintoken');
     setToken(()=>userToken);
     if (userToken) {
@@ -68,20 +80,32 @@ const StoryView = () => {
         setUserInformation(decodedToken);
         console.log(decodedToken);
     }
-    fetchStory(id)
-  },[])
+    fetchStory(id);
+    let endingTime = Date.now();
+    // updateEngagedTime(endingTime-startingTime)
+    
+  }, [])
+
+  useEffect(()=>{
+    return () => {
+      let endingTime = Date.now();
+      notify("Updating engagetime", "success");
+      updateEngagedTime(endingTime-startingTime)
+    }
+  }, [story, viewPath])
 
   return (
     <Layout>
-      <ToastContainer />
+      
       {
         story && story.paths ? <Container fluid className="d-flex justify-content-center pt-3" style={{ height: '100vh', backgroundColor: '#eee' }}>
-          <ToastContainer />
+        <ToastContainer />
         <Row>
+        
           <Col>
             <Card style={{ width: '800px', borderTop: "0px",  backgroundColor: '#fff', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
               <Card.Body>
-                <Card.Title className="text-center">{story.title}</Card.Title>
+                <Card.Title className="text-center">{story.title} <span style={{float: 'right'}}>{(story.engagedTime/1000)+"s"}</span></Card.Title>
                 <Card.Text>{story.body}</Card.Text>
                 {
                   viewPath ? <Card.Text>{viewPath.body}</Card.Text> : null

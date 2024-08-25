@@ -57,7 +57,6 @@ function Stories() {
         page.limit = response.data.limit;
         page.totalPage = Math.ceil(response.data.total/response.data.limit);
         page.total = response.data.total;
-        console.log(page.totalPage);
         setPagination(page);
         // setStories(storiesList);
       }
@@ -86,7 +85,6 @@ function Stories() {
     if (userToken) {
         const decodedToken = jwtDecode(userToken);
         setUserInformation(decodedToken);
-        console.log(decodedToken);
     }
     fetchStories(pagination)
   },[])
@@ -99,7 +97,7 @@ function Stories() {
               {stories.map((story, index) => (
                 <Card key={index} style={{ width: '800px', padding: '20px', backgroundColor: '#fff', marginBottom: '20px', borderRadius: '10px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
                   <Card.Body>
-                    <Card.Title className="text-center">{story.title}</Card.Title>
+                    <Card.Title className="text-center">{story.title} <span style={{float: 'right'}}>{(story.engagedTime/1000)+"s"}</span></Card.Title> 
                     <Card.Text>{story.body}</Card.Text>
                     <Button variant="primary" href={`stories/${story.id}`}>read more</Button>{' '}
                     {
