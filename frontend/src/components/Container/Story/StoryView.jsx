@@ -1,9 +1,19 @@
+import axios from 'axios';
+import {jwtDecode} from "jwt-decode";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Layout from "../../Layout/Layout";
 import React from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+const baseUrl = "http://localhost:8080/api/";
 
 const StoryView = () => {
-  const story = {
+  const [token, setToken] = useState("");
+  const [userInformation, setUserInformation] = useState({});
+  const [selectedOption, setSelectedOption] = useState("");
+  const [viewPath, setViewPath] = useState({});
+  const [story, setStory] = useState({
     title: "The Enchanted Forest",
     body: "You find yourself at the edge of a mysterious forest.",
     paths: [
@@ -20,7 +30,37 @@ const StoryView = () => {
     authorId: "66c7cd0cd96f47ba71bef8bf",
     authorName: "Kumol Bhoumik",
     createdAt: "2024-08-23 06:02:56"
-  };
+  });
+  const {id} = useParams();
+  const fetchStory = async (id) => {
+    try{
+      const response = await axios.get(`${baseUrl}story/${id}`);
+      if(response.data.statusCode == "200") {
+        setStory(response.data.body);
+      }
+    } catch(err){
+      console.log(err);
+    }
+  }
+
+  const chooseOption = (id)=>{
+    setSelectedOption(id);
+    let pathIndex = story.paths.findIndex(p=> p.option === id);
+    setViewPath(story.paths[pathIndex]);
+    console.log(story.paths[pathIndex]);
+  }
+
+  useEffect(()=>{
+    
+    const userToken = localStorage.getItem('logintoken');
+    setToken(()=>userToken);
+    if (userToken) {
+        const decodedToken = jwtDecode(userToken);
+        setUserInformation(decodedToken);
+        console.log(decodedToken);
+    }
+    fetchStory(id)
+  },[])
 
   return (
     <Layout>
@@ -31,15 +71,14 @@ const StoryView = () => {
               <Card.Body>
                 <Card.Title className="text-center">{story.title}</Card.Title>
                 <Card.Text>{story.body}</Card.Text>
-                <h5>Paths:</h5>
-                <ul>
-                  {story.paths.map((path, index) => (
-                    <li key={index}><strong>Option {path.option}:</strong> {path.body}</li>
-                  ))}
-                </ul>
-                <p><strong>Engaged Time:</strong> {story.engagedTime} seconds</p>
-                <p><strong>Author:</strong> {story.authorName}</p>
-                <p><strong>Created At:</strong> {story.createdAt}</p>
+                {
+                  viewPath ? <Card.Text>{viewPath.body}</Card.Text> : null
+                }
+                <p>Choose options</p>
+
+                {story.paths.map((path, index)=>{
+                  return <Button key={index} variant="secondary" onClick={()=>chooseOption(path.option)} style={{marginRight: "20px"}}>{path.option}</Button>
+                })}
               </Card.Body>
             </Card>
           </Col>

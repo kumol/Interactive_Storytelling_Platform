@@ -38,7 +38,7 @@ module.exports = {
     getSingleStory: async (req, res) => {
         try{
             let {id} = req.params;
-            let story = Story.findOne({id: id}).select("-__v -_id").lean();
+            let story = await Story.findOne({id: id}).select("-__v -_id").lean();
             return success(res, "", story);
         } catch (err){
             return throughError(res, err);
