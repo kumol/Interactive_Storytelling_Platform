@@ -98,7 +98,6 @@ const StoryView = () => {
       
       {
         story && story.paths ? <Container fluid className="d-flex justify-content-center pt-3" style={{ height: '100vh', backgroundColor: '#eee' }}>
-        <ToastContainer />
         <Row>
         
           <Col>
