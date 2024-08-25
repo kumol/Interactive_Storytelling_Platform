@@ -112,14 +112,14 @@ function Stories() {
               {stories.map((story, index) => (
                 <Card key={index} style={{ width: '100%', padding: '20px', backgroundColor: '#fff', marginBottom: '20px', borderRadius: '10px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
                   <Card.Body>
-                    <Card.Title className="text-center">{story.title} <span style={{float: 'right'}}>{(story.engagedTime/1000)+"s"}</span></Card.Title> 
+                    <Card.Title className="text-center">{story.title} <span style={{float: 'right', fontSize: "12px", fontStyle: "italic"}}>Watch Time: {(story.engagedTime/1000)+"s"}</span></Card.Title> 
                     <Card.Text>{story.body}</Card.Text>
                     <Button variant="primary" href={`stories/${story.id}`}>read more</Button>{' '}
                     {
                       (userInformation && userInformation.data && (userInformation.data.roleId === "1" || userInformation.data.id === story.authorId)) ? 
                       <>
                         <Button variant="warning" href={`stories/storyform/${story.id}`}>edit</Button>{' '}
-                        <Button variant="warning" onClick={()=>handleShow(story.id)}>delete</Button>{' '}
+                        <Button variant="danger" onClick={()=>handleShow(story.id)}>delete</Button>{' '}
                         <Modal
                           show={show}
                           onHide={handleClose}
@@ -144,10 +144,10 @@ function Stories() {
                   </Card.Body>
                 </Card>
               ))}
-              <ButtonToolbar aria-label="Toolbar with button groups">
+              <ButtonToolbar aria-label="Toolbar with button groups" style={{float: "right"}}>
                 <ButtonGroup className="me-2" aria-label="First group">
                   {[...Array(pagination.totalPage)].map((v, index)=>{
-                    return <Button key={index} onClick={(e)=>onPagination(e, index+1)} >{index+1}</Button>
+                    return <Button key={index} disabled={pagination.page == (index + 1)} onClick={(e)=>onPagination(e, index+1)} >{index+1}</Button>
                   })}
                 </ButtonGroup>
               </ButtonToolbar>
