@@ -15,8 +15,13 @@ function Stories() {
   const [userInformation, setUserInformation] = useState({});
   const [show, setShow] = useState(false);
   const [pagination, setPagination] = useState({page: 1, limit: 5, total: 0, totalPage: 1})
+  const [selectedId, setSelectedId] = useState("");
+
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleShow = (id) => {
+    setSelectedId(id);
+    setShow(true);
+  };
   const notify = (content, type) => {
     switch(type){
       case "success":
@@ -36,19 +41,7 @@ function Stories() {
         break;
     }
   };
-  const handleDelete = async(id) => {
-    try{
-      const response = await axios.delete(`${baseUrl}story/${id}`, {headers:{ Authorization: `Bearer ${token}`}});
-      setShow(false)
-      notify("Deletion successful", "success")
-    } catch (err){
-      if(err.name == "AxiosError"){
-        notify(err.response.data.message, "error");
-      } else {
-        notify(err.message, "error");
-      }
-    }
-  }
+  
   const fetchStories = async (paging) => {
     try{
       const response = await axios.get(`${baseUrl}story?page=${paging.page}&limit=${paging.limit}`);
@@ -73,7 +66,23 @@ function Stories() {
       }
     }
   }
-  
+  const handleDelete = async() => {
+    try{
+      const response = await axios.delete(`${baseUrl}story/${selectedId}`, {headers:{ Authorization: `Bearer ${token}`}});
+      setShow(false)
+      if(response.data.statusCode == "200"){
+        notify("Deletion successful", "success");
+        fetchStories(pagination);
+      }
+    } catch (err){
+      if(err.name == "AxiosError"){
+        notify(err.response.data.message, "error");
+      } else {
+        notify(err.message, "error");
+      }
+    }
+  }
+
   const onPagination = (e, pageNumber) => {
     e.preventDefault();
     let page = {...pagination};
@@ -97,11 +106,11 @@ function Stories() {
     return (
       <Layout>
         <ToastContainer />
-        { stories && stories.length>0 ? <Container fluid className="d-flex justify-content-center pt-3" style={{ minHeight: '100vh', backgroundColor: '#eee' }}>
-          <Row className="pt-20">
-            <Col>
+        { stories && stories.length>0 ? <Container fluid className="d-flex pt-3" style={{ minHeight: '100vh', backgroundColor: '#eee' }}>
+          <Row className="pt-20" style={{justifyContent: "center"}}>
+          <Col xs={12} md={10} lg={8} xl={8}>
               {stories.map((story, index) => (
-                <Card key={index} style={{ width: '800px', padding: '20px', backgroundColor: '#fff', marginBottom: '20px', borderRadius: '10px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+                <Card key={index} style={{ width: '100%', padding: '20px', backgroundColor: '#fff', marginBottom: '20px', borderRadius: '10px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
                   <Card.Body>
                     <Card.Title className="text-center">{story.title} <span style={{float: 'right'}}>{(story.engagedTime/1000)+"s"}</span></Card.Title> 
                     <Card.Text>{story.body}</Card.Text>
@@ -110,7 +119,7 @@ function Stories() {
                       (userInformation && userInformation.data && (userInformation.data.roleId === "1" || userInformation.data.id === story.authorId)) ? 
                       <>
                         <Button variant="warning" href={`stories/storyform/${story.id}`}>edit</Button>{' '}
-                        <Button variant="warning" onClick={handleShow}>delete</Button>{' '}
+                        <Button variant="warning" onClick={()=>handleShow(story.id)}>delete</Button>{' '}
                         <Modal
                           show={show}
                           onHide={handleClose}
@@ -127,7 +136,7 @@ function Stories() {
                             <Button variant="secondary" onClick={handleClose}>
                               Cancel
                             </Button>
-                            <Button variant="danger" onClick={()=>handleDelete(story.id)}>Confirm</Button>
+                            <Button variant="danger" onClick={()=>handleDelete()}>Confirm</Button>
                           </Modal.Footer>
                         </Modal>
                       </> : null

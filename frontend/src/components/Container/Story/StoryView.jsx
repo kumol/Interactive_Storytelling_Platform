@@ -97,11 +97,11 @@ const StoryView = () => {
     <Layout>
       
       {
-        story && story.paths ? <Container fluid className="d-flex justify-content-center pt-3" style={{ height: '100vh', backgroundColor: '#eee' }}>
-        <Row>
+        story && story.paths ? <Container fluid className="d-flex pt-3" style={{ height: '100vh', backgroundColor: '#eee' }}>
+        <Row style={{justifyContent: "center", width: "100%"}}>
         
-          <Col>
-            <Card style={{ width: '800px', borderTop: "0px",  backgroundColor: '#fff', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+          <Col xs={12} md={10} lg={8} xl={8}>
+            <Card style={{ width: '100%', borderTop: "0px",  backgroundColor: '#fff', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
               <Card.Body>
                 <Card.Title className="text-center">{story.title} <span style={{float: 'right'}}>{(story.engagedTime/1000)+"s"}</span></Card.Title>
                 <Card.Text>{story.body}</Card.Text>

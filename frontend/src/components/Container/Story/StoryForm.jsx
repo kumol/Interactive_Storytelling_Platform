@@ -130,45 +130,60 @@ const StoryForm = () => {
   },[]);
   return (
     <Layout>
-      <Container fluid className="d-flex align-items-center justify-content-center pt-3" style={{ minHeight: '100vh', backgroundColor: '#eee' }}>
+      <Container fluid className="d-flex pt-3" style={{ minHeight: '100vh', backgroundColor: '#eee' }}>
       <ToastContainer />
-      <Row style={{height: "100vh"}}>
-          <Col>
-            <Form style={{ width: '800px', padding: '20px', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }} onSubmit={handleSubmit}>
-              <Form.Group controlId="formTitle">
-                <Form.Label>Title</Form.Label>
-                <Form.Control type="text" name="title" value={story.title} onChange={handleChange} />
-              </Form.Group>
+      <Row className="w-100" style={{justifyContent: "center"}}>
+      <Col xs={12} md={10} lg={8} xl={8}>
+          <Form
+            style={{
+              width: '100%',
+              padding: '20px',
+              backgroundColor: '#fff',
+              borderRadius: '10px',
+              boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+            }}
+            onSubmit={handleSubmit}
+          >
+            <Form.Group controlId="formTitle">
+              <Form.Label>Title</Form.Label>
+              <Form.Control type="text" name="title" value={story.title} onChange={handleChange} />
+            </Form.Group>
 
-              <Form.Group controlId="formBody" className="mt-3">
-                <Form.Label>Body</Form.Label>
-                <Form.Control as="textarea" rows={3} name="body" value={story.body} onChange={handleChange} />
-              </Form.Group>
+            <Form.Group controlId="formBody" className="mt-3">
+              <Form.Label>Body</Form.Label>
+              <Form.Control as="textarea" rows={3} name="body" value={story.body} onChange={handleChange} />
+            </Form.Group>
 
-              <h5 className="mt-4">Paths</h5>
-              {story.paths.map((path, index) => (
-                <div key={index} className="mb-3">
-                  <Form.Group controlId={`formPathOption${index}`}>
-                    <Form.Label>Option {index + 1}</Form.Label>
-                    <Form.Control type="text" name="option" value={path.option} onChange={(e) => handlePathChange(index, e)} />
-                  </Form.Group>
+            <h5 className="mt-4">Paths</h5>
+            {story.paths.map((path, index) => (
+              <div key={index} className="mb-3">
+                <Form.Group controlId={`formPathOption${index}`}>
+                  <Form.Label>Option {index + 1}</Form.Label>
+                  <Form.Control type="text" name="option" value={path.option} onChange={(e) => handlePathChange(index, e)} />
+                </Form.Group>
 
-                  <Form.Group controlId={`formPathBody${index}`} className="mt-2">
-                    <Form.Label>Body</Form.Label>
-                    <Form.Control as="textarea" rows={2} name="body" value={path.body} onChange={(e) => handlePathChange(index, e)} />
-                  </Form.Group>
+                <Form.Group controlId={`formPathBody${index}`} className="mt-2">
+                  <Form.Label>Body</Form.Label>
+                  <Form.Control as="textarea" rows={2} name="body" value={path.body} onChange={(e) => handlePathChange(index, e)} />
+                </Form.Group>
 
-                  <Button variant="danger" className="mt-2" onClick={() => removePath(index)}>Remove Path</Button>
-                </div>
-              ))}
+                <Button variant="danger" className="mt-2" onClick={() => removePath(index)}>
+                  Remove Path
+                </Button>
+              </div>
+            ))}
 
-              <Button variant="secondary" onClick={addPath} className="mt-3">Add Path</Button>
+            <Button variant="secondary" onClick={addPath} className="mt-3">
+              Add Path
+            </Button>
 
-              <Button variant="primary" type="submit" onClick={handleSubmit} className="mt-4 w-100">Submit</Button>
-            </Form>
-          </Col>
-        </Row>
-      </Container>
+            <Button variant="primary" type="submit" onClick={handleSubmit} className="mt-4 w-100">
+              Submit
+            </Button>
+          </Form>
+        </Col>
+      </Row>
+    </Container>
     </Layout>
   );
 };
